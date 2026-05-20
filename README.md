@@ -17,7 +17,21 @@ Most standard MCP setups inject all avaliable MCP tool schemas to the model's co
    git clone https://github.com/ErikUustalu/mcp-lazy-proxy
    cd mcp-lazy-proxy
 2. **Configure your servers**
-   Rename the config.json.example to config.json and add your servers
+   Rename the config/config.json.example to config.json and add your servers
+
+## Docker Compose
+1. **Copy the compose**
+   Copy the example [docker-compose.yaml](docker-compose.yaml)
+2. **Copy the configuration**
+   ```
+   mkdir config
+   nano config/config.json
+   ```
+   Copy and edit the configuration from [config/config.json.example](config/config.json.example)
+3. **Start the compose**
+   ```
+   docker compose up -d
+   ```
 
 ## License
 MIT
