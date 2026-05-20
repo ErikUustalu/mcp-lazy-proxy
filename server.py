@@ -35,6 +35,11 @@ async def call_tool(tool_name: str, args: dict) -> str:
     """Call a tool with provided arguments"""
     return str(await proxy.call_tool(tool_name, args))
 
+@mcp.tool()
+async def search_tools(query: str) -> str:
+    """Search for tools by name or description"""
+    return str(await proxy.search_tools(query))
+
 async def main():
     await proxy.connect()
     try:

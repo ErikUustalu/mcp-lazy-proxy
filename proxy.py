@@ -51,6 +51,15 @@ class Proxy:
         else:
             return await self.tools[tool_name]["client"].call_tool(tool_name, args)
         
+    async def search_tools(self, query):
+        matches = []
+        for tool in self.tools.keys():
+            if query.lower() in tool.lower():
+                matches.append(tool)
+            if query.lower() in str(self.tools[tool]).lower():
+                matches.append(tool)
+        return matches
+
     async def disconnect(self):
         for client in self.clients:
             await client.__aexit__(None, None, None)
@@ -65,7 +74,7 @@ async def main():
             tool_map.append(tool)
     
     while True:
-        task = input("list(1), describe(2), call(3), exit(4): ")
+        task = input("list(1), describe(2), call(3), search(4), exit(5): ")
         if task == "1":
             tools = await proxy.list_tools()
             keys = tools.keys()
@@ -90,6 +99,10 @@ async def main():
             print(await proxy.call_tool(tool_name, json.loads(args)))
 
         elif task == "4":
+            query = input("Query: ")
+            print(await proxy.search_tools(query))
+
+        elif task == "5":
             await proxy.disconnect()
             break
 
