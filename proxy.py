@@ -8,7 +8,7 @@ from collections import defaultdict
 logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class Proxy:
-    def __init__(self, config_path="config.json"):
+    def __init__(self, config_path="config/config.json"):
         with open(config_path, "r") as f:
             self.config = json.load(f)
         self.tools = {}

@@ -5,7 +5,7 @@ import logging
 from proxy import Proxy
 from fastmcp import FastMCP
 
-CONFIG_PATH = os.environ.get("CONFIG_PATH", "config.json")
+CONFIG_PATH = os.environ.get("CONFIG_PATH", "config/config.json")
 
 logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
