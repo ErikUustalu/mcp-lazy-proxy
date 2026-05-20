@@ -1,7 +1,10 @@
 import json
 import asyncio
+import logging
 
 from fastmcp import Client
+
+logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class Proxy:
     def __init__(self, config_path="config.json"):
@@ -12,13 +15,18 @@ class Proxy:
 
     async def connect(self):
         for server in self.config["mcp_servers"]:
-            client = Client(server["url"])
-            await client.__aenter__()
+            try:
+                client = Client(server["url"])
+                await client.__aenter__()
+            except Exception as e:
+                logging.warning(f"Failed to connect to {server['name']} at {server['url']}: {e} - Skipping")
+                continue
             self.clients.append(client)
             for tool in await client.list_tools():
                 self.tools[tool.name] = {
                     "tool": tool,
-                    "client": client
+                    "client": client,
+                    "server": server["name"]
                 }
 
     async def list_tools(self):

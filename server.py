@@ -1,10 +1,13 @@
 import asyncio
 import os
+import logging
 
 from proxy import Proxy
 from fastmcp import FastMCP
 
 CONFIG_PATH = os.environ.get("CONFIG_PATH", "config.json")
+
+logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
 mcp = FastMCP("lazy-proxy")
 
