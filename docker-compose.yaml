@@ -1,0 +1,8 @@
+services:
+  mcp-lazy-proxy:
+    image: ghcr.io/erikuustalu/mcp-lazy-proxy:latest
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - ./config:/app/config
