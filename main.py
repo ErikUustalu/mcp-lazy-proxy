@@ -30,7 +30,10 @@ async def call_tool(tool_name: str, args: dict) -> str:
 
 async def main():
     await proxy.connect()
-    await mcp.run_async(transport="streamable-http", host="0.0.0.0", port=8080)
+    try:
+        await mcp.run_async(transport="streamable-http", host="0.0.0.0", port=8080)
+    finally:
+        await proxy.disconnect()
 
 if __name__ == "__main__":
     asyncio.run(main())

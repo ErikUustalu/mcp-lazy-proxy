@@ -11,12 +11,13 @@ class Proxy:
 
     async def connect(self):
         for server in self.config["mcp_servers"]:
-            async with Client(server["url"]) as client:
-                for tool in await client.list_tools():
-                    self.tools[tool.name] = {
-                        "tool": tool,
-                        "server": server["url"]
-                    }
+            client = Client(server["url"])
+            await client.__aenter__()
+            for tool in await client.list_tools():
+                self.tools[tool.name] = {
+                    "tool": tool,
+                    "client": client
+                }
 
     async def list_tools(self):
         return list(self.tools.keys())
@@ -31,8 +32,11 @@ class Proxy:
         if tool_name not in self.tools:
             return f"Tool '{tool_name}' not found"
         else:
-            async with Client(self.tools[tool_name]["server"]) as client:
-                return await client.call_tool(tool_name, args)
+            return await self.tools[tool_name]["client"].call_tool(tool_name, args)
+        
+    async def disconnect(self):
+        for server in self.config["mcp_servers"]:
+            await server["client"].__aexit__(None, None, None)
 
 if __name__ == "__main__":
     proxy = Proxy()
