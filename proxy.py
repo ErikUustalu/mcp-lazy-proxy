@@ -3,6 +3,7 @@ import asyncio
 import logging
 
 from fastmcp import Client
+from collections import defaultdict
 
 logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -33,7 +34,10 @@ class Proxy:
                 }
 
     async def list_tools(self):
-        return list(self.tools.keys())
+        output = defaultdict(list)
+        for tool in self.tools.keys():
+            output[self.tools[tool]["server"].lower().replace(" ", "_")].append(tool)
+        return output
     
     async def describe_tool(self, tool_name):
         if tool_name not in self.tools:
@@ -54,24 +58,32 @@ class Proxy:
 async def main():
     proxy = Proxy()
     await proxy.connect()
+
+    tool_map = []
+    for key in (await proxy.list_tools()).keys():
+        for tool in (await proxy.list_tools())[key]:
+            tool_map.append(tool)
     
     while True:
         task = input("list(1), describe(2), call(3), exit(4): ")
         if task == "1":
             tools = await proxy.list_tools()
-            for i in range(len(tools)):
-                print(f"[{i}] {tools[i]}")
+            keys = tools.keys()
+            for key in keys:
+                print(f"{key}:")
+                for tool in tools[key]:
+                    print(f"\t[{tool_map.index(tool)}] {tool}")
 
         elif task == "2":
             tool_name = input("Tool name: ")
             if tool_name.isdigit():
-                tool_name = (await proxy.list_tools())[int(tool_name)]
+                tool_name = tool_map[int(tool_name)]
             print(await proxy.describe_tool(tool_name))
 
         elif task == "3":
             tool_name = input("Tool name: ")
             if tool_name.isdigit():
-                tool_name = (await proxy.list_tools())[int(tool_name)]
+                tool_name = tool_map[int(tool_name)]
             args = input("Arguments: ")
             if args == "":
                 args = "{}"

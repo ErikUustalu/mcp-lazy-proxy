@@ -15,10 +15,14 @@ proxy = Proxy(CONFIG_PATH)
 
 @mcp.tool()
 async def list_tools() -> str:
-    """List all available tools seperated by commas"""
+    """List all available tools categorized by server and seperated by ;"""
     response = ""
-    for tool in await proxy.list_tools():
-        response += tool + ","
+    tools = await proxy.list_tools()
+    keys = tools.keys()
+    for key in keys:
+        response += f"\n{key}: "
+        for tool in tools[key]:
+            response += f"{tool};"
     return response
 
 @mcp.tool()
