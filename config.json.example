@@ -1,0 +1,10 @@
+{
+    "mcp_servers": [
+        {
+            "name": "Name displayed to the model",
+            "url": "MCP server URL",
+            "auth": false,
+            "token": "Bearer authentication token when auth is true. Doesn't need Bearer prefix"
+        }
+    ]
+}
