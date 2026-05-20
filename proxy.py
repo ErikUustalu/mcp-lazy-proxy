@@ -5,7 +5,7 @@ from fastmcp import Client
 
 class Proxy:
     def __init__(self, config_path="config.json"):
-        with open("config.json", "r") as f:
+        with open(config_path, "r") as f:
             self.config = json.load(f)
         self.tools = {}
         self.clients = []
