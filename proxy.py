@@ -16,7 +16,10 @@ class Proxy:
     async def connect(self):
         for server in self.config["mcp_servers"]:
             try:
-                client = Client(server["url"])
+                if server["auth"]:
+                    client = Client(server["url"], auth=server["token"])
+                else:
+                    client = Client(server["url"])
                 await client.__aenter__()
             except Exception as e:
                 logging.warning(f"Failed to connect to {server['name']} at {server['url']}: {e} - Skipping")
