@@ -8,11 +8,13 @@ class Proxy:
         with open("config.json", "r") as f:
             self.config = json.load(f)
         self.tools = {}
+        self.clients = []
 
     async def connect(self):
         for server in self.config["mcp_servers"]:
             client = Client(server["url"])
             await client.__aenter__()
+            self.clients.append(client)
             for tool in await client.list_tools():
                 self.tools[tool.name] = {
                     "tool": tool,
@@ -35,8 +37,8 @@ class Proxy:
             return await self.tools[tool_name]["client"].call_tool(tool_name, args)
         
     async def disconnect(self):
-        for server in self.config["mcp_servers"]:
-            await server["client"].__aexit__(None, None, None)
+        for client in self.clients:
+            await client.__aexit__(None, None, None)
 
 async def main():
     proxy = Proxy()
