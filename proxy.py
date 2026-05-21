@@ -49,7 +49,8 @@ class Proxy:
         if tool_name not in self.tools:
             return f"Tool '{tool_name}' not found"
         else:
-            return await self.tools[tool_name]["client"].call_tool(tool_name, args)
+            server_tool_name = tool_name.replace(self.tools[tool_name]["server"] + "_", "")
+            return await self.tools[tool_name]["client"].call_tool(server_tool_name, args)
         
     async def search_tools(self, query):
         matches = []
@@ -84,7 +85,7 @@ async def main():
         elif task == "3":
             tool_name = input("Tool name: ")
             if tool_name.isdigit():
-                tool_name = tool_map[int(tool_name)]
+                tool_name = list(await proxy.list_tools())[int(tool_name)]
             args = input("Arguments: ")
             if args == "":
                 args = "{}"
