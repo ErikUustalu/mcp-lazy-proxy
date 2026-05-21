@@ -27,10 +27,12 @@ class Proxy:
                 continue
             self.clients.append(client)
             for tool in await client.list_tools():
-                self.tools[tool.name] = {
+                server_name = server["name"].lower().replace(" ", "_")
+                tool_name = f"{tool.name}_{server_name}"
+                self.tools[tool_name] = {
                     "tool": tool,
                     "client": client,
-                    "server": server["name"]
+                    "server": server_name
                 }
 
     async def list_tools(self):
