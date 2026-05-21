@@ -4,6 +4,7 @@ import logging
 
 from fastmcp import Client
 from collections import defaultdict
+from rapidfuzz import fuzz
 
 logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -52,13 +53,16 @@ class Proxy:
             server_tool_name = tool_name.replace(self.tools[tool_name]["server"] + "_", "")
             return await self.tools[tool_name]["client"].call_tool(server_tool_name, args)
         
-    async def search_tools(self, query):
-        matches = []
+    async def search_tools(self, query, max_results=10):
+        tools = {}
         for tool in self.tools.keys():
-            if query.lower() in tool.lower():
-                matches.append(tool)
-            if query.lower() in str(self.tools[tool]).lower():
-                matches.append(tool)
+            name_ratio = fuzz.partial_ratio(tool.lower(), query.lower())
+            desc_ratio = fuzz.partial_ratio(self.tools[tool]["tool"].description.lower(), query.lower())
+            tools[tool] = name_ratio + desc_ratio
+
+        matches = sorted(tools, key=tools.get, reverse=True)
+        matches = matches[:max_results]
+            
         return matches
 
     async def disconnect(self):
