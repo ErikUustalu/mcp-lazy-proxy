@@ -28,7 +28,7 @@ class Proxy:
             self.clients.append(client)
             for tool in await client.list_tools():
                 server_name = server["name"].lower().replace(" ", "_")
-                tool_name = f"{tool.name}_{server_name}"
+                tool_name = f"{server_name}_{tool.name}"
                 self.tools[tool_name] = {
                     "tool": tool,
                     "client": client,
@@ -36,10 +36,7 @@ class Proxy:
                 }
 
     async def list_tools(self):
-        output = defaultdict(list)
-        for tool in self.tools.keys():
-            output[self.tools[tool]["server"].lower().replace(" ", "_")].append(tool)
-        return output
+        return list(self.tools.keys())
     
     async def describe_tool(self, tool_name):
         if tool_name not in self.tools:
@@ -69,21 +66,13 @@ class Proxy:
 async def main():
     proxy = Proxy()
     await proxy.connect()
-
-    tool_map = []
-    for key in (await proxy.list_tools()).keys():
-        for tool in (await proxy.list_tools())[key]:
-            tool_map.append(tool)
     
     while True:
         task = input("list(1), describe(2), call(3), search(4), exit(5): ")
         if task == "1":
             tools = await proxy.list_tools()
-            keys = tools.keys()
-            for key in keys:
-                print(f"{key}:")
-                for tool in tools[key]:
-                    print(f"\t[{tool_map.index(tool)}] {tool}")
+            for i in range(len(tools)):
+                print(f"[{i}] {tools[i]}")
 
         elif task == "2":
             tool_name = input("Tool name: ")
