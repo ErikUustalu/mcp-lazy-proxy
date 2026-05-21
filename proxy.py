@@ -55,9 +55,17 @@ class Proxy:
         
     async def search_tools(self, query, max_results=10):
         tools = {}
+        query_words = query.split()
+
         for tool in self.tools.keys():
-            name_ratio = fuzz.partial_ratio(tool.lower(), query.lower()) * 3
-            desc_ratio = fuzz.partial_ratio(self.tools[tool]["tool"].description.lower(), query.lower())
+            name_ratio = 0
+            desc_ratio = 0
+            for word in query_words:
+                name_ratio += fuzz.partial_ratio(tool.lower(), word.lower()) * 3
+                desc_ratio += fuzz.partial_ratio(self.tools[tool]["tool"].description.lower(), word.lower())
+
+            name_ratio /= len(query_words)
+            desc_ratio /= len(query_words)
             tools[tool] = name_ratio + desc_ratio
 
         matches = sorted(tools, key=tools.get, reverse=True)
