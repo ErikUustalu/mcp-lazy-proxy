@@ -68,10 +68,6 @@ class Proxy:
             desc_ratio /= len(query_words)
             tools[tool] = name_ratio + desc_ratio
 
-        for tool in tools:
-            if tools[tool] < 30:
-                tools.pop(tool)
-
         tools = sorted(tools, key=tools.get, reverse=True)
         tools = tools[:max_results]
 
