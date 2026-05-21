@@ -26,9 +26,10 @@ class Proxy:
                 logging.warning(f"Failed to connect to {server['name']} at {server['url']}: {e} - Skipping")
                 continue
             self.clients.append(client)
-            for tool in await client.list_tools():
+            for tool in await list(self.tools.keys()):
                 server_name = server["name"].lower().replace(" ", "_")
                 tool_name = f"{server_name}_{tool.name}"
+                tool.name = tool_name
                 self.tools[tool_name] = {
                     "tool": tool,
                     "client": client,
@@ -77,7 +78,7 @@ async def main():
         elif task == "2":
             tool_name = input("Tool name: ")
             if tool_name.isdigit():
-                tool_name = tool_map[int(tool_name)]
+                tool_name = list(await proxy.list_tools())[int(tool_name)]
             print(await proxy.describe_tool(tool_name))
 
         elif task == "3":
