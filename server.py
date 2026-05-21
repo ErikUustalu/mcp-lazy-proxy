@@ -33,9 +33,9 @@ async def call_tool(tool_name: str, args: dict) -> str:
     return str(await proxy.call_tool(tool_name, args))
 
 @mcp.tool()
-async def search_tools(query: str) -> str:
-    """Search for tools by name or description"""
-    return str(await proxy.search_tools(query))
+async def search_tools(query: str, max_results: int = 10, describe_tools: bool = True) -> str:
+    """Search for tools by name or description. Supports fuzzy search"""
+    return str(await proxy.search_tools(query, max_results, describe_tools))
 
 async def main():
     await proxy.connect()
