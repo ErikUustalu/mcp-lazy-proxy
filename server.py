@@ -35,7 +35,10 @@ async def call_tool(tool_name: str, args: dict) -> str:
 @mcp.tool()
 async def search_tools(query: str, max_results: int = 10, describe_tools: bool = True) -> str:
     """Search for tools by name or description. Supports fuzzy search"""
-    return str(await proxy.search_tools(query, max_results, describe_tools))
+    result = str(await proxy.search_tools(query, max_results, describe_tools))
+    if len(result) <= 4:
+        result = "No matches found"
+    return result
 
 async def main():
     await proxy.connect()
