@@ -26,7 +26,7 @@ class Proxy:
                 logging.warning(f"Failed to connect to {server['name']} at {server['url']}: {e} - Skipping")
                 continue
             self.clients.append(client)
-            for tool in await list(self.tools.keys()):
+            for tool in await client.list_tools():
                 server_name = server["name"].lower().replace(" ", "_")
                 tool_name = f"{server_name}_{tool.name}"
                 tool.name = tool_name
