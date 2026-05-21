@@ -53,7 +53,7 @@ class Proxy:
             server_tool_name = tool_name.replace(self.tools[tool_name]["server"] + "_", "")
             return await self.tools[tool_name]["client"].call_tool(server_tool_name, args)
         
-    async def search_tools(self, query, max_results=10):
+    async def search_tools(self, query, max_results=10, return_description=True):
         tools = {}
         query_words = query.split()
 
@@ -68,8 +68,16 @@ class Proxy:
             desc_ratio /= len(query_words)
             tools[tool] = name_ratio + desc_ratio
 
-        matches = sorted(tools, key=tools.get, reverse=True)
-        matches = matches[:max_results]
+        tools = sorted(tools, key=tools.get, reverse=True)
+        tools = tools[:max_results]
+
+        matches = []
+
+        if return_description:
+            for tool in tools:
+                matches.append(str(self.tools[tool]["tool"]))
+        else:
+            matches = tools
             
         return matches
 
@@ -105,7 +113,14 @@ async def main():
 
         elif task == "4":
             query = input("Query: ")
-            print(await proxy.search_tools(query))
+            max_results = int(input("Max results: "))
+            return_description = input("Return description ([y]/n): ")
+            if return_description == "" or return_description == "y":
+                return_description = True
+            else:
+                return_description = False
+
+            print(await proxy.search_tools(query, max_results=max_results, return_description=return_description))
 
         elif task == "5":
             await proxy.disconnect()
