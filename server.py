@@ -32,7 +32,7 @@ async def describe_tool(tool_name: str) -> str:
 
 @mcp.tool()
 async def call_tool(tool_name: str, args: dict) -> str:
-    """Call a tool with provided arguments"""
+    """Call a tool with provided arguments. Always use this for custom tools"""
     return str(await proxy.call_tool(tool_name, args))
 
 @mcp.tool()
