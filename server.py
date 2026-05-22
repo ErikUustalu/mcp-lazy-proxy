@@ -34,7 +34,7 @@ async def call_tool(tool_name: str, args: dict) -> str:
 
 @mcp.tool()
 async def search_tools(query: str, max_results: int = 10, describe_tools: bool = True) -> str:
-    """Search for tools by name or description. Supports fuzzy search"""
+    """Search for tools by name or description. Supports fuzzy search. Lists top 10 by default"""
     result = str(await proxy.search_tools(query, max_results, describe_tools))
     return result
 
