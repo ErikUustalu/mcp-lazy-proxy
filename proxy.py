@@ -10,12 +10,16 @@ logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(
 
 class Proxy:
     def __init__(self, config_path="config/config.json"):
-        with open(config_path, "r") as f:
-            self.config = json.load(f)
+        self.config_path = config_path
+        self.config = None
         self.tools = {}
         self.clients = []
 
-    async def connect(self):
+    async def load_config(self):
+        with open(self.config_path, "r") as f:
+            self.config = json.load(f)
+        tools = {}
+        clients = []
         for server in self.config["mcp_servers"]:
             try:
                 if server["auth"]:
@@ -26,16 +30,18 @@ class Proxy:
             except Exception as e:
                 logging.warning(f"Failed to connect to {server['name']} at {server['url']}: {e} - Skipping")
                 continue
-            self.clients.append(client)
+            clients.append(client)
             for tool in await client.list_tools():
                 server_name = server["name"].lower().replace(" ", "_")
                 tool_name = f"{server_name}_{tool.name}"
                 tool.name = tool_name
-                self.tools[tool_name] = {
+                tools[tool_name] = {
                     "tool": tool,
                     "client": client,
                     "server": server_name
                 }
+        self.tools = tools
+        self.clients = clients
 
     async def list_tools(self):
         return list(self.tools.keys())
@@ -87,7 +93,7 @@ class Proxy:
 
 async def main():
     proxy = Proxy()
-    await proxy.connect()
+    await proxy.load_config()
     
     while True:
         task = input("list(1), describe(2), call(3), search(4), exit(5): ")
