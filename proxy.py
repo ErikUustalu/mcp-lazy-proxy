@@ -96,7 +96,7 @@ async def main():
     await proxy.load_config()
     
     while True:
-        task = input("list(1), describe(2), call(3), search(4), exit(5): ")
+        task = input("list(1), describe(2), call(3), search(4), reload(5), exit(6): ")
         if task == "1":
             tools = await proxy.list_tools()
             for i in range(len(tools)):
@@ -129,6 +129,9 @@ async def main():
             print(await proxy.search_tools(query, max_results=max_results, return_description=return_description))
 
         elif task == "5":
+            await proxy.load_config()
+
+        elif task == "6":
             await proxy.disconnect()
             break
 
