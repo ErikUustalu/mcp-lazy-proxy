@@ -14,14 +14,15 @@ class Proxy:
     def __init__(self, config_path="config/config.json", auto_reload=True, check_interval=1):
         self.config_path = config_path
         self.config = None
+        self.auto_reload = auto_reload
         self.check_interval = check_interval
         self.tools = {}
         self.clients = []
 
-        if auto_reload:
+    async def start(self):
+        await self.load_config()
+        if self.auto_reload:
             asyncio.create_task(self.auto_reload())
-        else:
-            asyncio.create_task(self.load_config())
 
     async def auto_reload(self):
         last_modified = os.path.getmtime(self.config_path)
