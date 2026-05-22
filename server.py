@@ -39,7 +39,6 @@ async def search_tools(query: str, max_results: int = 10, describe_tools: bool =
     return result
 
 async def main():
-    await proxy.load_config()
     try:
         await mcp.run_async(transport="streamable-http", host="0.0.0.0", port=8080)
     finally:
