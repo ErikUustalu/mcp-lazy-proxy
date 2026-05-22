@@ -5,6 +5,7 @@ A lightweight context efficient proxy for MCP servers. Designed to reduce token 
 ## Features
 - **Lazy loading:** Only fetch and provide the tools list and schemas when the model actually needs them
 - **Easy to configure:** Configured with a simple config.json file
+- **Automatic live config reload** Configurations gets reloaded automatically when config.json gets changed
 - **Lightweight:** Minimal overhead and no bloated features
 
 ## Why did I make this
