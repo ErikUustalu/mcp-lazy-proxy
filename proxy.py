@@ -110,7 +110,7 @@ class Proxy:
             await client.__aexit__(None, None, None)
 
 async def main():
-    proxy = Proxy()
+    proxy = Proxy(auto_reload=False)
     await proxy.load_config()
     
     while True:
