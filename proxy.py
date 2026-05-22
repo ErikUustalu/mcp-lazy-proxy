@@ -22,7 +22,7 @@ class Proxy:
     async def start(self):
         await self.load_config()
         if self.auto_reload:
-            asyncio.create_task(self.auto_reload())
+            asyncio.create_task(auto_reload())
 
     async def auto_reload(self):
         last_modified = os.path.getmtime(self.config_path)
