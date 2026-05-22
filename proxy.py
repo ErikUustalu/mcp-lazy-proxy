@@ -1,6 +1,8 @@
 import json
 import asyncio
 import logging
+import os
+import time
 
 from fastmcp import Client
 from collections import defaultdict
@@ -9,11 +11,24 @@ from rapidfuzz import fuzz
 logging.basicConfig(level=logging.WARN, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class Proxy:
-    def __init__(self, config_path="config/config.json"):
+    def __init__(self, config_path="config/config.json", auto_reload=True, check_interval=1):
         self.config_path = config_path
         self.config = None
+        self.check_interval = check_interval
         self.tools = {}
         self.clients = []
+
+        if auto_reload:
+            asyncio.create_task(self.auto_reload())
+
+    async def auto_reload(self):
+        last_modified = os.path.getmtime(self.config_path)
+        while True:
+            current_modified = os.path.getmtime(self.config_path)
+            if current_modified != last_modified:
+                await self.load_config()
+                last_modified = current_modified
+            await asyncio.sleep(self.check_interval)
 
     async def load_config(self):
         with open(self.config_path, "r") as f:
