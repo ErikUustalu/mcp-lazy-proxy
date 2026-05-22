@@ -35,7 +35,11 @@ class Proxy:
 
     async def load_config(self):
         with open(self.config_path, "r") as f:
-            self.config = json.load(f)
+            try:
+                self.config = json.load(f)
+            except:
+                logging.warning("Invalid json. Skipping reload")
+                return
         tools = {}
         clients = []
         for server in self.config["mcp_servers"]:
@@ -46,7 +50,7 @@ class Proxy:
                     client = Client(server["url"])
                 await client.__aenter__()
             except Exception as e:
-                logging.warning(f"Failed to connect to {server['name']} at {server['url']}: {e} - Skipping")
+                logging.warning(f"Failed to connect to {server['name']} at {server['url']} - Skipping")
                 continue
             clients.append(client)
             for tool in await client.list_tools():
