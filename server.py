@@ -14,29 +14,32 @@ mcp = FastMCP("lazy-proxy")
 proxy = Proxy(CONFIG_PATH)
 
 @mcp.tool()
-async def list_tools() -> str:
-    """List all available tools seperated by ;"""
-    response = ""
-    tools = await proxy.list_tools()
-    for tool in tools:
-        response += tool + ";"
-    return response
+async def mcp_proxy(tool_name: str = "", args: dict = {}, query: str = "", max_results: int = 10) -> str:
+    """
+    MCP tools proxy. No parameters to list all tools. tool_name to get tool description. tool_name + args to call tool. Query to search for tools.
+    :param tool_name: Tool name
+    :param args: Arguments
+    :param query: Query
+    :param max_results: Max results. Only used to search
+    """
 
-@mcp.tool()
-async def describe_tool(tool_name: str) -> str:
-    """Describe a tool in detail"""
-    return str(await proxy.describe_tool(tool_name))
-
-@mcp.tool()
-async def call_tool(tool_name: str, args: dict) -> str:
-    """Call a tool with provided arguments. Always use this for custom tools"""
-    return str(await proxy.call_tool(tool_name, args))
-
-@mcp.tool()
-async def search_tools(query: str, max_results: int = 10, describe_tools: bool = True) -> str:
-    """Search for tools by name or description. Supports fuzzy search. Lists top 10 by default"""
-    result = str(await proxy.search_tools(query, max_results, describe_tools))
-    return result
+    if tool_name:
+        if query:
+            return "Tool name and query can't be used at once"
+        if args:
+            return str(await proxy.call_tool(tool_name, args))
+        else:
+            return str(await proxy.describe_tool(tool_name))
+    elif query:
+        if args:
+            return "Arguments and query can't be used at once"
+        return str(await proxy.search_tools(query, max_results))
+    else:
+        response = ""
+        tools = await proxy.list_tools()
+        for tool in tools:
+            response += tool + ";"
+        return response
 
 async def main():
     await proxy.start()
